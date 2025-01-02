@@ -13,6 +13,6 @@ userRoutes.post("/user",userController.user)
 userRoutes.post("/usercreate",userController.userCreate);
 
 // UPDATE USER
-userRoutes.put("/updateuser")
+userRoutes.put("/userupdate",userController.userUpdate)
 
 export default userRoutes;

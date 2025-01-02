@@ -33,7 +33,13 @@ async function emailExist(email) {
   }
 }
 
+async function usuarioExist(usuario_id){
+  const usuarioExist = await userQueries.usuarioExist(usuario_id);
+  return !!usuarioExist;
+}
+
 export const validations = {
   userValidation,
-  emailExist
+  emailExist,
+  usuarioExist
 };
