@@ -26,49 +26,42 @@ async function userCreate(req, res) {
 
   const senha_hash = crypt(senha);
 
-  const correctData = { nome, email, senha_hash };
+  const correctData = [nome, email, senha_hash];
 
   const resposta = await userQueries.userCreate(correctData);
   return res.json(resposta);
 }
-async function userUpdate(req, res) {
-  const { nome, email, senha, usuario_id } = req.body;
 
-  const userExist = await validations.usuarioExist(usuario_id);
-  if (!userExist) {
-    const msg = "Usuário não encontrado";
-    return res.json(msg);
+async function userUpdate(req, res) {
+  const {
+    nomeAtual,
+    nomeNovo,
+    emailAtual,
+    emailNovo,
+    senhaAtual,
+    senhaNova,
+    usuario_id,
+  } = req.body;
+  const data = req.body;
+
+  const valid = validations.userUpdateValidation(data);
+
+  if (valid) {
+    return res.status(valid.status).json(valid.error);
   }
-  if (email) {
-    const emailExist = await validations.emailExist(email);
+
+  if (!emailAtual == emailNovo) {
+    const emailExist = await validations.emailExist(emailNovo);
     if (emailExist) {
       return res.status(emailExist.status).json(emailExist.error);
     }
   }
-  let senha_hash;
-  if (senha) {
-    senha_hash = crypt(senha);
-  }
 
-  let correctData = [nome, email, senha_hash, usuario_id];
-  let resposta;
-  if (nome && email && senha) {
-    resposta = await userQueries.userUpdate(correctData, 1);
-  } else {
-    if (nome) {
-      correctData = [nome, usuario_id];
-      resposta = await userQueries.userUpdate(correctData, 2);
-    }
-    if (email) {
-      correctData = [email, usuario_id];
-      resposta = await userQueries.userUpdate(correctData, 3);
-    }
-    if (senha) {
-      correctData = [senha_hash, usuario_id];
-      resposta = await userQueries.userUpdate(correctData, 4);
-    }
-  }
+  const senha_hash = crypt(senhaNova);
 
+  const correctData = [nomeNovo, emailNovo, senha_hash, usuario_id];
+
+  const resposta = await userQueries.userUpdate(correctData);
   return res.json(resposta);
 }
 

@@ -5,11 +5,6 @@ const SELECT_ALL_USERS = "SELECT * FROM Usuarios";
 const SELECT_USER = "SELECT * FROM Usuarios WHERE usuario_id = $1";
 const SELECT_USER_WITH_EMAIL = "SELECT * FROM Usuarios WHERE email = $1";
 const SELECT_USSER_WITH_ID = "SELECT * FROM Usuarios WHERE usuario_id = $1";
-const UPDATE_USER_NAME = "UPDATE Usuarios SET nome = $1 WHERE usuario_id = $2";
-const UPDATE_USER_EMAIL =
-  "UPDATE Usuarios SET email = $1 WHERE usuario_id = $2";
-const UPDATE_USER_SENHA_HASH =
-  "UPDATE Usuarios SET senha_hash = $1 WHERE usuario_id = $2";
 const UPDATE_ALL =
   "UPDATE Usuarios SET nome = $1, email = $2, senha_hash = $3 WHERE usuario_id = $4";
 
@@ -53,27 +48,16 @@ async function userCreate(data) {
 }
 
 // UPDATE USER
-async function userUpdate(data, numQueryquery) {
-  const query = selectQuery(numQueryquery);
+async function userUpdate(data) {
+  const query = UPDATE_ALL;
   await execQuery(query,data);
   const res = "Usuário atualizado com sucesso";
   return res;
 }
 
-function selectQuery(numQuery) {
-  switch (numQuery) {
-    case 1:
-      return UPDATE_ALL;
-    case 2:
-      return UPDATE_USER_NAME;
-    case 3:
-      return UPDATE_USER_EMAIL;
-    default:
-      return UPDATE_USER_SENHA_HASH;
-  }
-}
 
-// CHECK EMAIL
+
+// CHECK EMAIL FOR CREATE
 async function emailExist(email) {
   const query = SELECT_USER_WITH_EMAIL;
   const params = [email];
@@ -81,18 +65,18 @@ async function emailExist(email) {
   return res.rows.length > 0;
 }
 
-async function usuarioExist(usuario_id) {
-  const query = SELECT_USSER_WITH_ID;
-  const params = [usuario_id]
-  const res = await execQuery(query,params);
-  return res.rows.length !== 0;
+// CHECK EMAIL FOR UPDATE
+async function emailExistU(emailA, emailN) {
+  const query = SELECT_USER_WITH_EMAIL;
+  const params = [email];
+  const res = await execQuery(query, params);
+  return res.rows.length > 0;
 }
-
 export const userQueries = {
   users,
   user,
   userCreate,
   userUpdate,
   emailExist,
-  usuarioExist
+  emailExistU
 };
