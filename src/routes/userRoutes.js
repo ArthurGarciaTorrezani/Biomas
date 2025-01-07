@@ -7,7 +7,7 @@ const userRoutes = Router();
 userRoutes.get("/users",userController.users);
 
 // GET USER
-userRoutes.post("/user",userController.user)
+userRoutes.get("/user",userController.user)
 
 // CREATE USER
 userRoutes.post("/usercreate",userController.userCreate);

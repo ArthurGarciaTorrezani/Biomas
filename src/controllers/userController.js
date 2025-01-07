@@ -1,16 +1,20 @@
 import { userQueries } from "../queries/userQueries.js";
+import { executeQueries } from "../queries/executeQueries.js";
 import { validations } from "../validations/validations.js";
 import bcrypt from "bcryptjs";
 
 async function users(req, res) {
-  const resposta = await userQueries.users();
+  const query = userQueries.SELECT_ALL_USERS;
+  const resposta = await executeQueries.elements(query);
   return res.json(resposta);
 }
 async function user(req, res) {
   const { usuario_id } = req.body;
-  const resposta = await userQueries.user(usuario_id);
+  const query = userQueries.SELECT_USER;
+  const resposta = await executeQueries.element(usuario_id, query);
   return res.json(resposta);
 }
+
 async function userCreate(req, res) {
   const { nome, email, senha } = req.body;
   const data = req.body;
@@ -19,7 +23,9 @@ async function userCreate(req, res) {
   if (valid) {
     return res.status(valid.status).json(valid.error);
   }
-  const emailExist = await validations.emailExist(email);
+
+  const queryE = userQueries.SELECT_USER_WITH_EMAIL;
+  const emailExist = await validations.emailExist(email,queryE);
   if (emailExist) {
     return res.status(emailExist.status).json(emailExist.error);
   }
@@ -27,21 +33,13 @@ async function userCreate(req, res) {
   const senha_hash = crypt(senha);
 
   const correctData = [nome, email, senha_hash];
-
-  const resposta = await userQueries.userCreate(correctData);
+  const query = userQueries.INSERT;
+  const resposta = await executeQueries.elementCreate(correctData, query);
   return res.json(resposta);
 }
 
 async function userUpdate(req, res) {
-  const {
-    nomeAtual,
-    nomeNovo,
-    emailAtual,
-    emailNovo,
-    senhaAtual,
-    senhaNova,
-    usuario_id,
-  } = req.body;
+  const { nomeNovo, emailAtual, emailNovo, senhaNova, usuario_id } = req.body;
   const data = req.body;
 
   const valid = validations.userUpdateValidation(data);
@@ -51,7 +49,8 @@ async function userUpdate(req, res) {
   }
 
   if (!emailAtual == emailNovo) {
-    const emailExist = await validations.emailExist(emailNovo);
+    const queryE = userQueries.SELECT_USER_WITH_EMAIL;
+    const emailExist = await validations.emailExist(emailNovo,queryE);
     if (emailExist) {
       return res.status(emailExist.status).json(emailExist.error);
     }
@@ -61,7 +60,8 @@ async function userUpdate(req, res) {
 
   const correctData = [nomeNovo, emailNovo, senha_hash, usuario_id];
 
-  const resposta = await userQueries.userUpdate(correctData);
+  const queryU = userQueries.UPDATE_ALL;
+  const resposta = await executeQueries.elementUpdate(correctData,queryU);
   return res.json(resposta);
 }
 

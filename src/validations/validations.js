@@ -1,4 +1,4 @@
-import { userQueries } from "../queries/userQueries.js";
+import { executeQueries } from "../queries/executeQueries.js";
 
 function userValidation(data) {
   const { nome, email, senha } = data;
@@ -41,7 +41,11 @@ function userUpdateValidation(data) {
     };
   }
 
-  if (!emailAtual ||typeof emailAtual !== "string" ||!emailAtual.includes("@")) {
+  if (
+    !emailAtual ||
+    typeof emailAtual !== "string" ||
+    !emailAtual.includes("@")
+  ) {
     return {
       error: "EmailAtual é obrigatório e deve ser um email válido.",
       status: 400,
@@ -69,8 +73,37 @@ function userUpdateValidation(data) {
   }
 }
 
-async function emailExist(email) {
-  const emailExist = await userQueries.emailExist(email);
+function postValidation(data) {
+  const {titulo, conteudo, bioma_id, usuario_id} = data;
+  if (!titulo || typeof titulo !== "string" || titulo.trim() === "") {
+    return {
+      error: "Titulo é obrigatório e deve ser uma string não vazia.",
+      status: 400,
+    };
+  }
+  if (!conteudo || typeof conteudo !== "string" || conteudo.trim() === "") {
+    return {
+      error: "Conteudo é obrigatório e deve ser uma string não vazia.",
+      status: 400,
+    };
+  }
+  if (!bioma_id || typeof bioma_id !== "number" || bioma_id <= 0) {
+    return {
+      error: "bioma_id é obrigatório e deve ser um número positivo.",
+      status: 400,
+    };
+  }
+
+  if (!usuario_id || typeof usuario_id !== "number" || usuario_id <= 0) {
+    return {
+      error: "usuario_id é obrigatório e deve ser um número positivo.",
+      status: 400,
+    };
+  }
+}
+
+async function emailExist(email, query) {
+  const emailExist = await executeQueries.emailExist(email, query);
   if (emailExist) {
     return {
       error: "E-mail já em uso, tente outro.",
@@ -79,8 +112,32 @@ async function emailExist(email) {
   }
 }
 
+async function userExist(user_id, query) {
+  const userExist = await executeQueries.elementExist(user_id, query);
+  if (!userExist) {
+    return {
+      error: "Usuário não encontrado",
+      status: 400,
+    };
+  }
+}
+
+async function biomExist(bioma_id, query) {
+  const biomExist = await executeQueries.elementExist(bioma_id, query);
+  if (!biomExist) {
+    return {
+      error: "Bioma não encontrado",
+      status: 400,
+    };
+  }
+}
+
+
 export const validations = {
   userValidation,
   emailExist,
   userUpdateValidation,
+  postValidation,
+  userExist,
+  biomExist
 };
