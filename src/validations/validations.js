@@ -102,6 +102,74 @@ function postValidation(data) {
   }
 }
 
+function comentValidation(data) {
+  const {titulo, conteudo, usuario_id, post_id} = data;
+  if (!titulo || typeof titulo !== "string" || titulo.trim() === "") {
+    return {
+      error: "Titulo é obrigatório e deve ser uma string não vazia.",
+      status: 400,
+    };
+  }
+  if (!conteudo || typeof conteudo !== "string" || conteudo.trim() === "") {
+    return {
+      error: "Conteudo é obrigatório e deve ser uma string não vazia.",
+      status: 400,
+    };
+  }
+
+  if (!usuario_id || typeof usuario_id !== "number" || usuario_id <= 0) {
+    return {
+      error: "usuario_id é obrigatório e deve ser um número positivo.",
+      status: 400,
+    };
+  }
+
+  if (!post_id || typeof post_id !== "number" || post_id <= 0) {
+    return {
+      error: "post_id é obrigatório e deve ser um número positivo.",
+      status: 400,
+    };
+  }
+}
+
+function comentUpdateValidation(data) {
+  const {titulo, conteudo, usuario_id, post_id, comentario_id} = data;
+  if (!titulo || typeof titulo !== "string" || titulo.trim() === "") {
+    return {
+      error: "Titulo é obrigatório e deve ser uma string não vazia.",
+      status: 400,
+    };
+  }
+  if (!conteudo || typeof conteudo !== "string" || conteudo.trim() === "") {
+    return {
+      error: "Conteudo é obrigatório e deve ser uma string não vazia.",
+      status: 400,
+    };
+  }
+
+  if (!usuario_id || typeof usuario_id !== "number" || usuario_id <= 0) {
+    return {
+      error: "usuario_id é obrigatório e deve ser um número positivo.",
+      status: 400,
+    };
+  }
+
+  if (!post_id || typeof post_id !== "number" || post_id <= 0) {
+    return {
+      error: "post_id é obrigatório e deve ser um número positivo.",
+      status: 400,
+    };
+  }
+
+  if (!comentario_id || typeof comentario_id !== "number" || comentario_id <= 0) {
+    return {
+      error: "comentario_id é obrigatório e deve ser um número positivo.",
+      status: 400,
+    };
+  }
+}
+
+
 async function emailExist(email, query) {
   const emailExist = await executeQueries.emailExist(email, query);
   if (emailExist) {
@@ -139,5 +207,7 @@ export const validations = {
   userUpdateValidation,
   postValidation,
   userExist,
-  biomExist
+  biomExist,
+  comentValidation,
+  comentUpdateValidation
 };
