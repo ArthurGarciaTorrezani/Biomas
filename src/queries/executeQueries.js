@@ -17,12 +17,14 @@ async function elements(query) {
 }
 
 // GET ELEMENT
-async function element(post_id, query) {
-  const params = [post_id];
+async function element(idEmail, query) {
+  const params = [idEmail];
   const result = await execQuery(query, params);
   if (result.rows.length === 0) {
-    const msg = "Elemento não encontrado";
-    return msg;
+    return {
+      error: "Elementro não encontrado.",
+      status: 204,
+    };
   }
   return result.rows[0];
 }
@@ -36,13 +38,13 @@ async function elementCreate(data, query) {
 }
 
 // UPDATE ELEMENT
-async function elementUpdate(data,query) {
+async function elementUpdate(data, query) {
   await execQuery(query, data);
   const res = "Elemento atualizado com sucesso";
   return res;
 }
 
-async function elementExist(id,query){
+async function elementExist(id, query) {
   const params = [id];
   const res = await execQuery(query, params);
   return res.rows.length > 0;
@@ -56,23 +58,12 @@ async function emailExist(email, query) {
 }
 
 
-
-
-
-// CHECK EMAIL FOR UPDATE
-//async function emailExistU(emailA, emailN) {
-//const query = SELECT_USER_WITH_EMAIL;
-//const params = [email];
-//const res = await execQuery(query, params);
-//return res.rows.length > 0;
-//}
-
 export const executeQueries = {
   elements,
   element,
   elementCreate,
   elementUpdate,
   emailExist,
-  elementExist
-  // emailExistU
+  elementExist,
+
 };

@@ -1,4 +1,5 @@
 import { executeQueries } from "../queries/executeQueries.js";
+import bcrypt from "bcryptjs";
 
 function userValidation(data) {
   const { nome, email, senha } = data;
@@ -74,7 +75,7 @@ function userUpdateValidation(data) {
 }
 
 function postValidation(data) {
-  const {titulo, conteudo, bioma_id, usuario_id} = data;
+  const { titulo, conteudo, bioma_id, usuario_id } = data;
   if (!titulo || typeof titulo !== "string" || titulo.trim() === "") {
     return {
       error: "Titulo é obrigatório e deve ser uma string não vazia.",
@@ -103,7 +104,7 @@ function postValidation(data) {
 }
 
 function comentValidation(data) {
-  const {titulo, conteudo, usuario_id, post_id} = data;
+  const { titulo, conteudo, usuario_id, post_id } = data;
   if (!titulo || typeof titulo !== "string" || titulo.trim() === "") {
     return {
       error: "Titulo é obrigatório e deve ser uma string não vazia.",
@@ -131,44 +132,6 @@ function comentValidation(data) {
     };
   }
 }
-
-function comentUpdateValidation(data) {
-  const {titulo, conteudo, usuario_id, post_id, comentario_id} = data;
-  if (!titulo || typeof titulo !== "string" || titulo.trim() === "") {
-    return {
-      error: "Titulo é obrigatório e deve ser uma string não vazia.",
-      status: 400,
-    };
-  }
-  if (!conteudo || typeof conteudo !== "string" || conteudo.trim() === "") {
-    return {
-      error: "Conteudo é obrigatório e deve ser uma string não vazia.",
-      status: 400,
-    };
-  }
-
-  if (!usuario_id || typeof usuario_id !== "number" || usuario_id <= 0) {
-    return {
-      error: "usuario_id é obrigatório e deve ser um número positivo.",
-      status: 400,
-    };
-  }
-
-  if (!post_id || typeof post_id !== "number" || post_id <= 0) {
-    return {
-      error: "post_id é obrigatório e deve ser um número positivo.",
-      status: 400,
-    };
-  }
-
-  if (!comentario_id || typeof comentario_id !== "number" || comentario_id <= 0) {
-    return {
-      error: "comentario_id é obrigatório e deve ser um número positivo.",
-      status: 400,
-    };
-  }
-}
-
 
 async function emailExist(email, query) {
   const emailExist = await executeQueries.emailExist(email, query);
@@ -200,6 +163,23 @@ async function biomExist(bioma_id, query) {
   }
 }
 
+async function checkPassword(usuario_id, senha, query) {
+  const user = await executeQueries.element(usuario_id, query);
+  if (!user) {
+    return {
+      error: "Usuário não encontrado",
+      status: 400,
+    };
+  }
+  const { senha_hash } = user;
+  const a = bcrypt.compareSync(senha, senha_hash);
+  if (!a) {
+    return {
+      error: "Senha não compatível",
+      status: 400,
+    };
+  }
+}
 
 export const validations = {
   userValidation,
@@ -209,5 +189,5 @@ export const validations = {
   userExist,
   biomExist,
   comentValidation,
-  comentUpdateValidation
+  checkPassword,
 };
