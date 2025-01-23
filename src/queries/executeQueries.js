@@ -44,6 +44,12 @@ async function elementUpdate(data, query) {
   return res;
 }
 
+async function elementDelete(data, query) {
+  await execQuery(query, data);
+  const res = "Elemento deletado com sucesso";
+  return res;
+}
+
 async function elementExist(id, query) {
   const params = [id];
   const res = await execQuery(query, params);
@@ -65,5 +71,5 @@ export const executeQueries = {
   elementUpdate,
   emailExist,
   elementExist,
-
+  elementDelete,
 };

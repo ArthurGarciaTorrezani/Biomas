@@ -16,4 +16,6 @@ comentRoutes.post("/comentcreate",comentController.comentCreate);
 // UPDATE COMENT
 comentRoutes.put("/comentupdate",comentController.comentUpdate)
 
+// DELETE
+comentRoutes.delete("/comentdelete",comentController.comentDelete)
 export default comentRoutes;

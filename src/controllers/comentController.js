@@ -47,7 +47,7 @@ async function comentUpdate(req,res) {
   } = req.body;
   const data = req.body;
 
-  const notValid = validations.comentUpdateValidation(data);
+  const notValid = validations.comentValidation(data);
   if (notValid) {
     return res.status(valid.status).json(valid.error);
   }
@@ -65,9 +65,18 @@ async function comentUpdate(req,res) {
   return res.json(resposta);
 }
 
+async function comentDelete(req,res) {
+  const {comentario_id} = req.body;
+  const data = [comentario_id];
+  const queryD = comentQueries.DELETE;
+  const resposta = await executeQueries.elementDelete(data,queryD);
+  return res.json(resposta);
+}
+
 export const comentController = {
   coments,
   coment,
   comentCreate,
   comentUpdate,
+  comentDelete
 };
