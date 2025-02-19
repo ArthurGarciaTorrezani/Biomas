@@ -25,8 +25,8 @@ async function userCreate(req, res) {
   }
 
   const queryE = userQueries.SELECT_USER_WITH_EMAIL;
-  const emailExist = await validations.emailExist(email,queryE);
-  if (emailExist) {
+  const emailExist = await validations.emailExist(email, queryE);
+  if (emailExist.success == false) {
     return res.status(emailExist.status).json(emailExist.error);
   }
 
@@ -48,10 +48,10 @@ async function userUpdate(req, res) {
     return res.status(valid.status).json(valid.error);
   }
 
-  if (!emailAtual == emailNovo) {
+  if (emailAtual !== emailNovo) {
     const queryE = userQueries.SELECT_USER_WITH_EMAIL;
-    const emailExist = await validations.emailExist(emailNovo,queryE);
-    if (emailExist) {
+    const emailExist = await validations.emailExist(emailNovo, queryE);
+    if (emailExist.success == false) {
       return res.status(emailExist.status).json(emailExist.error);
     }
   }
@@ -61,13 +61,13 @@ async function userUpdate(req, res) {
   const correctData = [nomeNovo, emailNovo, senha_hash, usuario_id];
 
   const queryU = userQueries.UPDATE_ALL;
-  const resposta = await executeQueries.elementUpdate(correctData,queryU);
+  const resposta = await executeQueries.elementUpdate(correctData, queryU);
   return res.json(resposta);
 }
 
-function crypt(senha) {
-  let salt = bcrypt.genSaltSync(10);
-  let senha_hash = bcrypt.hashSync(senha, salt);
+async function crypt(senha) {
+  let salt = await bcrypt.genSalt(10);
+  let senha_hash = await bcrypt.hash(senha, salt);
   return senha_hash;
 }
 

@@ -12,57 +12,137 @@ async function execQuery(query, params) {
 
 // GET ELEMENTS
 async function elements(query) {
-  const posts = await execQuery(query);
-  return posts.rows;
+  try {
+    const posts = await execQuery(query);
+    return {
+      success: true,
+      data: posts.rows,
+      status: 200
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: error.message,
+      status: 500
+    };
+  }
 }
 
 // GET ELEMENT
 async function element(idEmail, query) {
-  const params = [idEmail];
-  const result = await execQuery(query, params);
-  if (result.rows.length === 0) {
+  try {
+    const params = [idEmail];
+    const result = await execQuery(query, params);
+    if (result.rows.length === 0) {
+      return {
+        success: false,
+        error: "Elemento não encontrado",
+        status: 404
+      };
+    }
     return {
-      error: "Elementro não encontrado.",
-      status: 204,
+      success: true,
+      data: result.rows[0],
+      status: 200
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: error.message,
+      status: 500
     };
   }
-  return result.rows[0];
 }
 
 // CREATE ELEMENT
 async function elementCreate(data, query) {
-  const params = data;
-  await execQuery(query, params);
-  const res = "Elemento criado com sucesso";
-  return res;
+  try {
+    const params = data;
+    await execQuery(query, params);
+    return {
+      success: true,
+      message: "Elemento criado com sucesso",
+      status: 201
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: error.message,
+      status: 500
+    };
+  }
 }
 
 // UPDATE ELEMENT
 async function elementUpdate(data, query) {
-  await execQuery(query, data);
-  const res = "Elemento atualizado com sucesso";
-  return res;
+  try {
+    await execQuery(query, data);
+    return {
+      success: true,
+      message: "Elemento atualizado com sucesso",
+      status: 200
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: error.message,
+      status: 500
+    };
+  }
 }
 
 async function elementDelete(data, query) {
-  await execQuery(query, data);
-  const res = "Elemento deletado com sucesso";
-  return res;
+  try {
+    await execQuery(query, data);
+    return {
+      success: true,
+      message: "Elemento deletado com sucesso",
+      status: 200
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: error.message,
+      status: 500
+    };
+  }
 }
 
 async function elementExist(id, query) {
-  const params = [id];
-  const res = await execQuery(query, params);
-  return res.rows.length > 0;
+  try {
+    const params = [id];
+    const res = await execQuery(query, params);
+    return {
+      success: true,
+      exists: res.rows.length > 0,
+      status: 200
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: error.message,
+      status: 500
+    };
+  }
 }
 
-// CHECK EMAIL FOR CREATE
 async function emailExist(email, query) {
-  const params = [email];
-  const res = await execQuery(query, params);
-  return res.rows.length > 0;
+  try {
+    const params = [email];
+    const res = await execQuery(query, params);
+    return {
+      success: true,
+      exists: res.rows.length > 0,
+      status: 200
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: error.message,
+      status: 500
+    };
+  }
 }
-
 
 export const executeQueries = {
   elements,

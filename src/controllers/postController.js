@@ -20,13 +20,15 @@ async function postCreate(req, res) {
 
   const queryU = userQueries.SELECT_USER_WITH_ID;
   const userExist = await validations.userExist(usuario_id, queryU);
-  if (userExist) {
+  
+  if (userExist.success == false) {
     return res.status(userExist.status).json(userExist.error);
   }
 
   const queryB = biomsQueries.SELECT_BIOM;
   const biomExist = await validations.biomExist(bioma_id, queryB);
-  if (biomExist) {
+  if (biomExist.success == false) {
+    console.log(biomExist)
     return res.status(biomExist.status).json(biomExist.error);
   }
 
@@ -40,19 +42,20 @@ async function postUpdate(req, res) {
   const { titulo, conteudo, bioma_id, usuario_id } = req.body;
   const data = req.body;
   const valid = validations.postValidation(data);
+
   if (valid) {
     return res.status(valid.status).json(valid.error);
   }
 
   const queryU = userQueries.SELECT_USER_WITH_ID;
   const userExist = await validations.userExist(usuario_id, queryU);
-  if (userExist) {
+  if (userExist.success === false) {
     return res.status(userExist.status).json(userExist.error);
   }
 
   const queryB = biomsQueries.SELECT_BIOM;
   const biomExist = await validations.biomExist(bioma_id, queryB);
-  if (biomExist) {
+  if (biomExist.success === false) {
     return res.status(biomExist.status).json(biomExist.error);
   }
 

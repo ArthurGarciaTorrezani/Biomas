@@ -25,30 +25,11 @@ function userValidation(data) {
 }
 
 function userUpdateValidation(data) {
-  const { nomeAtual, nomeNovo, emailAtual, emailNovo, senhaAtual, senhaNova } =
-    data;
-
-  if (!nomeAtual || typeof nomeAtual !== "string" || nomeAtual.trim() === "") {
-    return {
-      error: "Nome é obrigatório e deve ser uma string não vazia.",
-      status: 400,
-    };
-  }
+  const { nomeNovo, emailNovo, senhaNova } = data;
 
   if (!nomeNovo || typeof nomeNovo !== "string" || nomeNovo.trim() === "") {
     return {
       error: "Nome é obrigatório e deve ser uma string não vazia.",
-      status: 400,
-    };
-  }
-
-  if (
-    !emailAtual ||
-    typeof emailAtual !== "string" ||
-    !emailAtual.includes("@")
-  ) {
-    return {
-      error: "EmailAtual é obrigatório e deve ser um email válido.",
       status: 400,
     };
   }
@@ -60,12 +41,6 @@ function userUpdateValidation(data) {
     };
   }
 
-  if (!senhaAtual || typeof senhaAtual !== "string" || senhaAtual.length < 6) {
-    return {
-      error: "Senha é obrigatória e deve ter pelo menos 6 caracteres.",
-      status: 400,
-    };
-  }
   if (!senhaNova || typeof senhaNova !== "string" || senhaNova.length < 6) {
     return {
       error: "Senha é obrigatória e deve ter pelo menos 6 caracteres.",
@@ -135,32 +110,36 @@ function comentValidation(data) {
 
 async function emailExist(email, query) {
   const emailExist = await executeQueries.emailExist(email, query);
-  if (emailExist) {
+
+  if (emailExist.exists === true) {  
+    
     return {
+      success: false,
       error: "E-mail já em uso, tente outro.",
       status: 400,
     };
   }
-}
-
-async function userExist(user_id, query) {
-  const userExist = await executeQueries.elementExist(user_id, query);
-  if (!userExist) {
-    return {
-      error: "Usuário não encontrado",
-      status: 400,
-    };
-  }
+  return {
+    success: true,
+    message: "E-mail disponível para uso",
+    status: 200
+  };
 }
 
 async function biomExist(bioma_id, query) {
   const biomExist = await executeQueries.elementExist(bioma_id, query);
-  if (!biomExist) {
+  if (biomExist.exists === false) {
     return {
+      success: false,
       error: "Bioma não encontrado",
       status: 400,
     };
   }
+  return {
+    success: true,
+    error: "Bioma encontrado",
+    status: 200,
+  };
 }
 
 async function checkPassword(usuario_id, senha, query) {
@@ -181,13 +160,28 @@ async function checkPassword(usuario_id, senha, query) {
   }
 }
 
+async function userExist(user_id, query) {
+  const userExist = await executeQueries.elementExist(user_id, query);
+  if (userExist.exists === false) {
+    return {
+      success: false,
+      error: "Usuário não encontrado",
+      status: 400,
+    };
+  }
+  return {
+    success: true,
+    error: "Usuário encontrado",
+    status: 200,
+  };
+}
 export const validations = {
   userValidation,
   emailExist,
   userUpdateValidation,
   postValidation,
-  userExist,
   biomExist,
   comentValidation,
   checkPassword,
+  userExist
 };
