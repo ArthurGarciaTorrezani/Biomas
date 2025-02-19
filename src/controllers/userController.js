@@ -6,6 +6,7 @@ import bcrypt from "bcryptjs";
 async function users(req, res) {
   const query = userQueries.SELECT_ALL_USERS;
   const resposta = await executeQueries.elements(query);
+  console.log(req.session.user);
   return res.json(resposta);
 }
 async function user(req, res) {
@@ -31,7 +32,7 @@ async function userCreate(req, res) {
   }
 
   const senha_hash = crypt(senha);
-
+console.log(senha_hash)
   const correctData = [nome, email, senha_hash];
   const query = userQueries.INSERT;
   const resposta = await executeQueries.elementCreate(correctData, query);
@@ -65,9 +66,10 @@ async function userUpdate(req, res) {
   return res.json(resposta);
 }
 
-async function crypt(senha) {
-  let salt = await bcrypt.genSalt(10);
-  let senha_hash = await bcrypt.hash(senha, salt);
+ function crypt(senha) {
+  let salt =  bcrypt.genSaltSync(10);
+  let senha_hash =  bcrypt.hashSync(senha, salt);
+  console.log(senha_hash)
   return senha_hash;
 }
 

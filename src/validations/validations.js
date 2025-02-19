@@ -142,22 +142,31 @@ async function biomExist(bioma_id, query) {
   };
 }
 
-async function checkPassword(usuario_id, senha, query) {
-  const user = await executeQueries.element(usuario_id, query);
-  if (!user) {
+async function checkPassword(email, senha, query) {
+  const user = await executeQueries.element(email, query);
+  
+  if (user.success === false) {
     return {
       error: "Usuário não encontrado",
       status: 400,
     };
   }
-  const { senha_hash } = user;
+  const senha_hash  = user.data.senha_hash;
+
   const a = bcrypt.compareSync(senha, senha_hash);
   if (!a) {
     return {
+      success: false,
       error: "Senha não compatível",
       status: 400,
     };
   }
+
+  return {
+    success: true,
+    error: "Senha compatível",
+    status: 200,
+  };
 }
 
 async function userExist(user_id, query) {

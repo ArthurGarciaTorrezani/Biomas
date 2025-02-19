@@ -14,23 +14,25 @@ async function sessionCreate(req, res) {
 
   const checkPassword = await validations.checkPassword(email, senha, queryU);
 
-  if (checkPassword) {
+  if (checkPassword.success === false) {
     return res.status(checkPassword.status).json(checkPassword.error);
   }
   
-  const { nome, usuario_id } = user;
+  const { nome, usuario_id } = user.data;
   req.session.user = {
     nome: nome,
     usuario_id,
-  };
-  return res.json(req.session.user);
+  }; 
+  
+  return res.json({success: true});
 }
 
-function logout(req, res) {
+function sessionLogout(req, res) {
   req.session.user = undefined;
+  return res.json({'logout': 'ok'})
 }
 
 export const sessionController = {
   sessionCreate,
-  logout,
+  sessionLogout,
 };

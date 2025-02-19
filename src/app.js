@@ -3,20 +3,22 @@ import bodyParser from "body-parser";
 import routes from "./routes/mainRoute.js";
 import helmet from "helmet";
 import session from "express-session";
+import cors from "cors";
 
 const app = express();
 
 app.set("trust proxy", 1); // trust first proxy
 app.use(
   session({
-    secret: "tetecaralho 93",
-    resave: false,
-    saveUninitialized: true,
-    cookie: { secure: true, maxAge:30000 },
-    
+    resave: process.env.resave,
+    saveUninitialized: process.env.saveUninitialized,
+    secret: process.env.secret, 
+    cookie: { maxAge: 3000 }, 
   })
 );
+
 app.use(helmet());
+app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(routes);
