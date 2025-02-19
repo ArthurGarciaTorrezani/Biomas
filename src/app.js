@@ -13,7 +13,7 @@ app.use(
     resave: process.env.resave,
     saveUninitialized: process.env.saveUninitialized,
     secret: process.env.secret, 
-    cookie: { maxAge: 3000 }, 
+    cookie: { maxAge: 300000 }, 
   })
 );
 

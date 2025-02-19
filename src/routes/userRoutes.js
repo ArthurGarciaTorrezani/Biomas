@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { userController } from "../controllers/userController.js";
+import auth from "../middlewares/auth.js";
 
 const userRoutes = Router();
 
@@ -13,6 +14,6 @@ userRoutes.get("/user",userController.user)
 userRoutes.post("/usercreate",userController.userCreate);
 
 // UPDATE USER
-userRoutes.put("/userupdate",userController.userUpdate);
+userRoutes.put("/userupdate",auth,userController.userUpdate);
 
 export default userRoutes;

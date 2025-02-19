@@ -3,8 +3,8 @@ document
         .addEventListener("submit", function (event) {
           event.preventDefault(); // Impede o envio padrão do formulário
 
-          const email = document.getElementById("login").value;
-          const senha = document.getElementById("senha").value;
+          const email = document.getElementById("email").value;
+          const senha = document.getElementById("password").value;
 
           if (!email || !senha) {
             alert("Por favor, preencha todos os campos.");

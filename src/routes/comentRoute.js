@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { comentController } from "../controllers/comentController.js";
+import auth from "../middlewares/auth.js";
 
 const comentRoutes = new Router();
 
@@ -11,11 +12,11 @@ comentRoutes.get("/coments",comentController.coments);
 comentRoutes.get("/coment",comentController.coment)
 
 // CREATE COMENT
-comentRoutes.post("/comentcreate",comentController.comentCreate);
+comentRoutes.post("/comentcreate",auth,comentController.comentCreate);
 
 // UPDATE COMENT
-comentRoutes.put("/comentupdate",comentController.comentUpdate)
+comentRoutes.put("/comentupdate",auth,comentController.comentUpdate)
 
 // DELETE
-comentRoutes.delete("/comentdelete",comentController.comentDelete)
+comentRoutes.delete("/comentdelete",auth,comentController.comentDelete)
 export default comentRoutes;
