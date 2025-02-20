@@ -6,4 +6,5 @@ export const comentQueries = {
   UPDATE_ALL:
     "UPDATE Comentarios SET titulo = $1, conteudo = $2, usuario_id = $3, comentario_pai_id = $4 , post_id = $5 WHERE comentario_id = $6",
   DELETE: "DELETE FROM Comentarios WHERE comentario_id = $1",
+  SELECT_COMENTARIO_WITH_ID_AND_USER: "SELECT * FROM Comentarios WHERE comentario_id = $1 AND usuario_id = $2"
 };

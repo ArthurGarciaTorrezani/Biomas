@@ -16,5 +16,4 @@ postRoutes.post("/postcreate",auth,postController.postCreate);
 // UPDATE POST
 postRoutes.put("/postupdate",auth,postController.postUpdate);
 
-
 export default postRoutes;

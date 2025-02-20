@@ -13,6 +13,10 @@ async function postCreate(req, res) {
   const { titulo, conteudo, bioma_id, usuario_id } = req.body;
   const data = req.body;
 
+  if (req.session.user.id != usuario_id) {
+    return res.json({ "dados incorretos": "id diferente" });
+  }
+
   const valid = validations.postValidation(data);
   if (valid) {
     return res.status(valid.status).json(valid.error);
@@ -20,15 +24,15 @@ async function postCreate(req, res) {
 
   const queryU = userQueries.SELECT_USER_WITH_ID;
   const userExist = await validations.userExist(usuario_id, queryU);
-  
+
   if (userExist.success == false) {
     return res.status(userExist.status).json(userExist.error);
   }
 
   const queryB = biomsQueries.SELECT_BIOM;
   const biomExist = await validations.biomExist(bioma_id, queryB);
+
   if (biomExist.success == false) {
-    console.log(biomExist)
     return res.status(biomExist.status).json(biomExist.error);
   }
 
@@ -39,8 +43,13 @@ async function postCreate(req, res) {
 }
 
 async function postUpdate(req, res) {
-  const { titulo, conteudo, bioma_id, usuario_id } = req.body;
+  const { post_id, titulo, conteudo, bioma_id, usuario_id } = req.body;
   const data = req.body;
+
+  if (req.session.user.id != usuario_id) {
+    return res.json({ "dados incorretos": "id diferente" });
+  }
+
   const valid = validations.postValidation(data);
 
   if (valid) {
@@ -49,18 +58,36 @@ async function postUpdate(req, res) {
 
   const queryU = userQueries.SELECT_USER_WITH_ID;
   const userExist = await validations.userExist(usuario_id, queryU);
+
   if (userExist.success === false) {
     return res.status(userExist.status).json(userExist.error);
   }
 
   const queryB = biomsQueries.SELECT_BIOM;
   const biomExist = await validations.biomExist(bioma_id, queryB);
+
   if (biomExist.success === false) {
     return res.status(biomExist.status).json(biomExist.error);
   }
 
-  const correctData = [titulo, conteudo, bioma_id, usuario_id];
-  const queryP = postQueries.INSERT;
+  const queryCheckPost = postQueries.SELECT_POST_WITH_ID_AND_USER;
+  let correctData = [post_id, usuario_id];
+  const postExist = await executeQueries.checkPostExist(
+    correctData,
+    queryCheckPost
+  );
+
+  if (postExist.error || postExist.exists == false) {
+    return res
+      .status(404)
+      .json({
+        error:
+          "Post não encontrado ou usuário não autorizado a editar este post",
+      });
+  }
+
+  correctData =  [titulo, conteudo, bioma_id, usuario_id, post_id];
+  const queryP = postQueries.UPDATE_ALL;
   const resposta = await executeQueries.elementUpdate(correctData, queryP);
   return res.json(resposta);
 }
@@ -71,6 +98,7 @@ async function post(req, res) {
   const resposta = await executeQueries.element(post_id, query);
   return res.json(resposta);
 }
+
 export const postController = {
   posts,
   post,

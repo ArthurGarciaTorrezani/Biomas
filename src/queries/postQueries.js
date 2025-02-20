@@ -4,5 +4,6 @@ export const postQueries = {
   SELECT_ALL_POSTS: "SELECT * FROM Posts",
   SELECT_POST: "SELECT * FROM Posts WHERE post_id = $1",
   UPDATE_ALL:
-    "UPDATE Usuarios SET titulo = $1, conteudo = $2, bioma_id = $3, usuario_id = $4 WHERE post_id = $5",
+    "UPDATE Posts SET titulo = $1, conteudo = $2, bioma_id = $3, usuario_id = $4 WHERE post_id = $5",
+    SELECT_POST_WITH_ID_AND_USER: "SELECT * FROM Posts WHERE post_id = $1 AND usuario_id = $2"
 };

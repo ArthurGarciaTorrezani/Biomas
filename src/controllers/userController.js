@@ -6,9 +6,9 @@ import bcrypt from "bcryptjs";
 async function users(req, res) {
   const query = userQueries.SELECT_ALL_USERS;
   const resposta = await executeQueries.elements(query);
-  console.log(req.session.user);
   return res.json(resposta);
 }
+
 async function user(req, res) {
   const { usuario_id } = req.body;
   const query = userQueries.SELECT_USER;
@@ -32,7 +32,7 @@ async function userCreate(req, res) {
   }
 
   const senha_hash = crypt(senha);
-console.log(senha_hash)
+
   const correctData = [nome, email, senha_hash];
   const query = userQueries.INSERT;
   const resposta = await executeQueries.elementCreate(correctData, query);
@@ -40,36 +40,45 @@ console.log(senha_hash)
 }
 
 async function userUpdate(req, res) {
-  const { nomeNovo, emailAtual, emailNovo, senhaNova, usuario_id } = req.body;
-  const data = req.body;
+  const { nomeNovo, emailNovo, senhaNova, usuario_id } = req.body;
 
-  const valid = validations.userUpdateValidation(data);
+  if (req.session.user.id != usuario_id) {
+    return res.json({ error: "ID do usuário incorreto" });
+  }
 
+  const valid = validations.userUpdateValidation(req.body);
   if (valid) {
     return res.status(valid.status).json(valid.error);
   }
 
-  if (emailAtual !== emailNovo) {
+  const queryV = userQueries.SELECT_USER;
+  const userExist = await executeQueries.element(usuario_id, queryV);
+
+  if (userExist.error) {
+    return res.status(userExist.status).json(userExist.error);
+  }
+
+  if (userExist.data.email !== emailNovo) {
     const queryE = userQueries.SELECT_USER_WITH_EMAIL;
     const emailExist = await validations.emailExist(emailNovo, queryE);
-    if (emailExist.success == false) {
+    if (!emailExist.success) {
       return res.status(emailExist.status).json(emailExist.error);
     }
   }
 
-  const senha_hash = crypt(senhaNova);
-
+  const senha_hash = senhaNova ? crypt(senhaNova) : userExist.senha;
   const correctData = [nomeNovo, emailNovo, senha_hash, usuario_id];
 
   const queryU = userQueries.UPDATE_ALL;
-  const resposta = await executeQueries.elementUpdate(correctData, queryU);
-  return res.json(resposta);
+  const updateResult = await executeQueries.elementUpdate(correctData, queryU);
+
+  return res.json(updateResult);
 }
 
- function crypt(senha) {
-  let salt =  bcrypt.genSaltSync(10);
-  let senha_hash =  bcrypt.hashSync(senha, salt);
-  console.log(senha_hash)
+
+function crypt(senha) {
+  let salt = bcrypt.genSaltSync(10);
+  let senha_hash = bcrypt.hashSync(senha, salt);
   return senha_hash;
 }
 

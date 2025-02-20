@@ -21,7 +21,7 @@ async function sessionCreate(req, res) {
   const { nome, usuario_id } = user.data;
   req.session.user = {
     nome: nome,
-    usuario_id,
+    id: usuario_id,
   }; 
   
   return res.json({success: true});

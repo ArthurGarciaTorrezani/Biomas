@@ -12,5 +12,5 @@ export const userQueries = {
   SELECT_USER,
   UPDATE_ALL,
   SELECT_USER_WITH_EMAIL,
-  SELECT_USER_WITH_ID
+  SELECT_USER_WITH_ID,
 };

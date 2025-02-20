@@ -144,6 +144,23 @@ async function emailExist(email, query) {
   }
 }
 
+async function checkPostExist(data, query) {
+  try {
+    const res = await execQuery(query, data);
+    return {
+      success: true,
+      exists: res.rows.length > 0,
+      status: 200
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: error.message,
+      status: 500
+    };
+  }
+}
+
 export const executeQueries = {
   elements,
   element,
@@ -152,4 +169,5 @@ export const executeQueries = {
   emailExist,
   elementExist,
   elementDelete,
+  checkPostExist
 };

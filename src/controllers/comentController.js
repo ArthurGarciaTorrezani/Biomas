@@ -19,9 +19,13 @@ async function comentCreate(req, res) {
   const { titulo, conteudo, usuario_id, comentario_pai_id, post_id } = req.body;
   const data = req.body;
 
+  if(req.session.user.id != usuario_id){
+    return res.json({"dados incorretos":"id diferente"})
+  }
+
   const notValid = validations.comentValidation(data);
   if (notValid) {
-    return res.status(valid.status).json(valid.error);
+    return res.status(notValid .status).json(notValid .error);
   }
 
   const queryC = comentQueries.INSERT;
@@ -36,7 +40,7 @@ async function comentCreate(req, res) {
   return res.json(resposta);
 }
 
-async function comentUpdate(req,res) {
+async function comentUpdate(req, res) {
   const {
     titulo,
     conteudo,
@@ -52,8 +56,29 @@ async function comentUpdate(req,res) {
     return res.status(valid.status).json(valid.error);
   }
 
+  if(req.session.user.id != usuario_id){
+    return res.json({"dados incorretos":"id diferente"})
+  }
+
+  const queryCheckComent = comentQueries.SELECT_COMENTARIO_WITH_ID_AND_USER;
+    let correctData = [comentario_id, usuario_id];
+    const comentExist = await executeQueries.checkPostExist(
+      correctData,
+      queryCheckComent
+    );
+
+    
+    if (comentExist.error || comentExist.exists == false) {
+      return res
+        .status(404)
+        .json({
+          error:
+            "Post não encontrado ou usuário não autorizado a editar este post",
+        });
+    }
+
   const queryC = comentQueries.UPDATE_ALL;
-  const correctData = [
+   correctData = [
     titulo,
     conteudo,
     usuario_id,
@@ -65,11 +90,16 @@ async function comentUpdate(req,res) {
   return res.json(resposta);
 }
 
-async function comentDelete(req,res) {
-  const {comentario_id} = req.body;
+async function comentDelete(req, res) {
+  
+  if(req.session.user.id != usuario_id){
+    return res.json({"dados incorretos":"id diferente"})
+  }
+  
+  const { comentario_id } = req.body;
   const data = [comentario_id];
   const queryD = comentQueries.DELETE;
-  const resposta = await executeQueries.elementDelete(data,queryD);
+  const resposta = await executeQueries.elementDelete(data, queryD);
   return res.json(resposta);
 }
 
@@ -78,5 +108,5 @@ export const comentController = {
   coment,
   comentCreate,
   comentUpdate,
-  comentDelete
+  comentDelete,
 };

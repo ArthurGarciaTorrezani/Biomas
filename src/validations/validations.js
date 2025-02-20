@@ -51,6 +51,8 @@ function userUpdateValidation(data) {
 
 function postValidation(data) {
   const { titulo, conteudo, bioma_id, usuario_id } = data;
+
+
   if (!titulo || typeof titulo !== "string" || titulo.trim() === "") {
     return {
       error: "Titulo é obrigatório e deve ser uma string não vazia.",
