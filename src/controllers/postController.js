@@ -9,6 +9,10 @@ async function posts(req, res) {
   return res.json(posts);
 }
 
+async function postscoments(req,res){
+  const posts = await executeQueries.elements(postQueries.SELECT_POSTS_WITH_COMENT);
+  return res.json(posts);
+}
 async function postCreate(req, res) {
   const { titulo, conteudo, bioma_id, usuario_id } = req.body;
   const data = req.body;
@@ -99,9 +103,12 @@ async function post(req, res) {
   return res.json(resposta);
 }
 
+
+
 export const postController = {
   posts,
   post,
   postCreate,
   postUpdate,
+  postscoments
 };
