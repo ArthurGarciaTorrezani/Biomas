@@ -1,40 +1,39 @@
-document.addEventListener("DOMContentLoaded", function () {
-     loadPosts();
- });
- 
- function loadPosts() {
-     fetch("http://localhost:8080/postscoments")
-         .then(response => response.json())
-         .then(posts => {
-             const postsContainer = document.querySelector(".posts");
-             postsContainer.innerHTML = "<h2>Últimos Posts</h2>";
-                
-             for (let i = 0; i < posts.data.length; i++) {
-                 const post = posts.data[i];
-                 const postElement = document.createElement("div");
-                 postElement.classList.add("post");
-                 console.log(post)
-                 postElement.innerHTML = `
-                     <h3>Título do post: ${post.titulo_post}</h3>
-                     <p>Conteúdo do post:${post.conteudo_post}</p>
-                     <p>Título do comentario:${post.titulo_comentario}</p>
-                     <p>Conteúdo do comentario:${post.conteudo_comentario}</p>
-                     <form class="comment-form">
-                         <textarea placeholder="Adicione um comentário..."></textarea>
-                         <button type="submit">Comentar</button>
-                     </form>
-                 `;
-                 postsContainer.appendChild(postElement);
-             }
- 
-             const commentForms = document.querySelectorAll(".comment-form");
-             for (let i = 0; i < commentForms.length; i++) {
-                 commentForms[i].addEventListener("submit", function (event) {
-                     event.preventDefault(); // Impede o envio padrão do formulário
-                     console.log("Comentário enviado!");
-                 });
-             }
-         })
-         .catch(error => console.error("Erro ao buscar posts:", error));
- }
- 
+document.addEventListener("DOMContentLoaded", async () => {
+    const postsContainer = document.querySelector(".posts");
+    
+    try {
+      const response = await fetch("  http://localhost:8080/postscoments");
+      const postsData = await response.json();
+      
+      if (!postsData || !postsData.length) return;
+      
+      postsData.forEach(post => {
+        const postElement = document.createElement("div");
+        postElement.classList.add("post");
+  
+        // Verifica se existem comentários antes de acessá-los
+        const comentarios = post.comentarios && post.comentarios.data ? post.comentarios.data : [];
+        console.log(post.post)
+        postElement.innerHTML = `
+          <h3>${post.post.titulo}</h3>
+          <p>${post.post.conteudo}</p>
+          <h4>Comentários:</h4>
+          <ul>
+            ${comentarios.length > 0 
+              ? comentarios.map(coment => `<li>${coment.conteudo}</li>`).join("")
+              : "<li>Sem comentários</li>"
+            }
+          </ul>
+          <textarea placeholder="Adicione um comentário..."></textarea>
+          <button>Comentar</button>
+          <hr>
+        `;
+        
+        postsContainer.appendChild(postElement);
+      });
+    } catch (error) {
+      console.error("Erro ao carregar posts:", error);
+    }
+  });
+  
+

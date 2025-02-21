@@ -11,19 +11,24 @@ async function execQuery(query, params) {
 }
 
 // GET ELEMENTS
-async function elements(query) {
+async function elements(query, data) {
   try {
-    const posts = await execQuery(query);
+    const posts = await execQuery(query, data);
+
+    if (!posts.rows || posts.rows.length === 0) {
+      return;
+    }
+
     return {
       success: true,
       data: posts.rows,
-      status: 200
+      status: 200,
     };
   } catch (error) {
     return {
       success: false,
       error: error.message,
-      status: 500
+      status: 500,
     };
   }
 }
@@ -37,19 +42,19 @@ async function element(idEmail, query) {
       return {
         success: false,
         error: "Elemento não encontrado",
-        status: 404
+        status: 404,
       };
     }
     return {
       success: true,
       data: result.rows[0],
-      status: 200
+      status: 200,
     };
   } catch (error) {
     return {
       success: false,
       error: error.message,
-      status: 500
+      status: 500,
     };
   }
 }
@@ -62,13 +67,13 @@ async function elementCreate(data, query) {
     return {
       success: true,
       message: "Elemento criado com sucesso",
-      status: 201
+      status: 201,
     };
   } catch (error) {
     return {
       success: false,
       error: error.message,
-      status: 500
+      status: 500,
     };
   }
 }
@@ -80,13 +85,13 @@ async function elementUpdate(data, query) {
     return {
       success: true,
       message: "Elemento atualizado com sucesso",
-      status: 200
+      status: 200,
     };
   } catch (error) {
     return {
       success: false,
       error: error.message,
-      status: 500
+      status: 500,
     };
   }
 }
@@ -97,13 +102,13 @@ async function elementDelete(data, query) {
     return {
       success: true,
       message: "Elemento deletado com sucesso",
-      status: 200
+      status: 200,
     };
   } catch (error) {
     return {
       success: false,
       error: error.message,
-      status: 500
+      status: 500,
     };
   }
 }
@@ -115,13 +120,13 @@ async function elementExist(id, query) {
     return {
       success: true,
       exists: res.rows.length > 0,
-      status: 200
+      status: 200,
     };
   } catch (error) {
     return {
       success: false,
       error: error.message,
-      status: 500
+      status: 500,
     };
   }
 }
@@ -133,13 +138,13 @@ async function emailExist(email, query) {
     return {
       success: true,
       exists: res.rows.length > 0,
-      status: 200
+      status: 200,
     };
   } catch (error) {
     return {
       success: false,
       error: error.message,
-      status: 500
+      status: 500,
     };
   }
 }
@@ -150,13 +155,13 @@ async function checkPostExist(data, query) {
     return {
       success: true,
       exists: res.rows.length > 0,
-      status: 200
+      status: 200,
     };
   } catch (error) {
     return {
       success: false,
       error: error.message,
-      status: 500
+      status: 500,
     };
   }
 }
@@ -169,5 +174,5 @@ export const executeQueries = {
   emailExist,
   elementExist,
   elementDelete,
-  checkPostExist
+  checkPostExist,
 };

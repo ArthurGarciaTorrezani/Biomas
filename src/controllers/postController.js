@@ -1,6 +1,7 @@
 import { biomsQueries } from "../queries/biomsQueries.js";
 import { executeQueries } from "../queries/executeQueries.js";
 import { postQueries } from "../queries/postQueries.js";
+import { comentQueries } from "../queries/comentQueries.js";
 import { userQueries } from "../queries/userQueries.js";
 import { validations } from "../validations/validations.js";
 
@@ -9,10 +10,24 @@ async function posts(req, res) {
   return res.json(posts);
 }
 
-async function postscoments(req,res){
-  const posts = await executeQueries.elements(postQueries.SELECT_POSTS_WITH_COMENT);
-  return res.json(posts);
+async function postscoments(req, res) {
+  const posts = await executeQueries.elements(postQueries.SELECT_ALL_POSTS);
+
+  let postComents = [];
+
+  for (const post of posts.data) {
+   
+    const coments = await executeQueries.elements(comentQueries.SELECT_COMENTS_BY_ID, [post.post_id]);
+    
+    postComents.push({
+      post: post,
+      comentarios: coments,
+    });
+  }
+
+  return res.json(postComents);
 }
+
 async function postCreate(req, res) {
   const { titulo, conteudo, bioma_id, usuario_id } = req.body;
   const data = req.body;
@@ -82,15 +97,12 @@ async function postUpdate(req, res) {
   );
 
   if (postExist.error || postExist.exists == false) {
-    return res
-      .status(404)
-      .json({
-        error:
-          "Post não encontrado ou usuário não autorizado a editar este post",
-      });
+    return res.status(404).json({
+      error: "Post não encontrado ou usuário não autorizado a editar este post",
+    });
   }
 
-  correctData =  [titulo, conteudo, bioma_id, usuario_id, post_id];
+  correctData = [titulo, conteudo, bioma_id, usuario_id, post_id];
   const queryP = postQueries.UPDATE_ALL;
   const resposta = await executeQueries.elementUpdate(correctData, queryP);
   return res.json(resposta);
@@ -103,12 +115,10 @@ async function post(req, res) {
   return res.json(resposta);
 }
 
-
-
 export const postController = {
   posts,
   post,
   postCreate,
   postUpdate,
-  postscoments
+  postscoments,
 };
